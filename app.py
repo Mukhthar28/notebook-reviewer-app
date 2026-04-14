@@ -28,7 +28,7 @@ with st.sidebar:
         st.error("API key not configured. Set GROQ_API_KEY in Streamlit secrets or environment.")
 
     groq_model = st.selectbox(
-        "Agent",
+        "Pilot",
         ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"],
         index=0,
     )
