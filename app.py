@@ -9,23 +9,23 @@ st.set_page_config(page_title="Notebook Code Reviewer", page_icon="🔍", layout
 st.title("🔍 Notebook Code Reviewer")
 st.caption("Upload a Fabric notebook (.py) or Jupyter notebook (.ipynb) to get a full code review.")
 
-# ── Sidebar — API key config ─────────────────────────────────────────────────
-# Read from Streamlit secrets (cloud) → env var → sidebar input
-def _get_default_key():
+# ── API key config (hidden — loaded from secrets/env only) ────────────────────
+def _load_api_key():
     try:
         return st.secrets["GROQ_API_KEY"]
     except (KeyError, FileNotFoundError):
         return os.environ.get("GROQ_API_KEY", "")
 
+_api_key = _load_api_key()
+if _api_key:
+    os.environ["GROQ_API_KEY"] = _api_key
+
 with st.sidebar:
     st.header("⚙️ Configuration")
-    default_key = _get_default_key()
-    groq_key = st.text_input(
-        "Groq API Key", type="password", value=default_key,
-        help="Auto-loaded from Streamlit secrets or environment variable if available.",
-    )
-    if groq_key:
-        os.environ["GROQ_API_KEY"] = groq_key
+    if _api_key:
+        st.success("API key loaded ✓")
+    else:
+        st.error("API key not configured. Set GROQ_API_KEY in Streamlit secrets or environment.")
 
     groq_model = st.selectbox(
         "Groq Model",
