@@ -10,9 +10,20 @@ st.title("🔍 Notebook Code Reviewer")
 st.caption("Upload a Fabric notebook (.py) or Jupyter notebook (.ipynb) to get a full code review.")
 
 # ── Sidebar — API key config ─────────────────────────────────────────────────
+# Read from Streamlit secrets (cloud) → env var → sidebar input
+def _get_default_key():
+    try:
+        return st.secrets["GROQ_API_KEY"]
+    except (KeyError, FileNotFoundError):
+        return os.environ.get("GROQ_API_KEY", "")
+
 with st.sidebar:
     st.header("⚙️ Configuration")
-    groq_key = st.text_input("Groq API Key", type="password", value=os.environ.get("GROQ_API_KEY", ""))
+    default_key = _get_default_key()
+    groq_key = st.text_input(
+        "Groq API Key", type="password", value=default_key,
+        help="Auto-loaded from Streamlit secrets or environment variable if available.",
+    )
     if groq_key:
         os.environ["GROQ_API_KEY"] = groq_key
 
